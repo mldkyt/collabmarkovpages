@@ -1,15 +1,15 @@
-# Collaborative Markov Bot
+# Collaborative Markov Pages
 
 [![Fedi Account Badge](https://img.shields.io/badge/main%20instance-%40collabmarkov%40fedi.lunya.pet-pink)
 ](https://fedi.lunya.pet/@collabmarkov)
-[![Forgejo Stars](https://img.shields.io/gitea/stars/Lunya/collabmarkov?gitea_url=https%3A%2F%2Fgit.lunya.pet%2F&style=flat)](https://git.lunya.pet/Lunya/collabmarkov/stars)
-[![Forgejo Issues](https://img.shields.io/gitea/issues/open/Lunya/collabmarkov?gitea_url=https%3A%2F%2Fgit.lunya.pet)](https://git.lunya.pet/Lunya/collabmarkov/issues)
-[![Forgejo Pull Requests](https://img.shields.io/gitea/pull-requests/open/Lunya/collabmarkov?gitea_url=https%3A%2F%2Fgit.lunya.pet)](https://git.lunya.pet/Lunya/collabmarkov/pulls)
+[![Forgejo Stars](https://img.shields.io/gitea/stars/Lunya/collabmarkovpages?gitea_url=https%3A%2F%2Fgit.lunya.pet%2F&style=flat)](https://git.lunya.pet/Lunya/collabmarkovpages/stars)
+[![Forgejo Issues](https://img.shields.io/gitea/issues/open/Lunya/collabmarkovpages?gitea_url=https%3A%2F%2Fgit.lunya.pet)](https://git.lunya.pet/Lunya/collabmarkovpages/issues)
+[![Forgejo Pull Requests](https://img.shields.io/gitea/pull-requests/open/Lunya/collabmarkovpages?gitea_url=https%3A%2F%2Fgit.lunya.pet)](https://git.lunya.pet/Lunya/collabmarkovpages/pulls)
 
 
-oh god no
+oh GOD no
 
-This bot takes all posts from all the users that follow it and makes a markov post out of that.
+This bot takes all posts from all the users that follow it and makes an ENTIRE page and publishes it.
 
 ## Development
 

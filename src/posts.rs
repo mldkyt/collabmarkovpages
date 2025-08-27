@@ -1,9 +1,11 @@
 use std::{thread::sleep, time::Duration, vec};
 
+use chrono::{Datelike, Utc};
 use regex::Regex;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
+use uuid::Uuid;
 
 use crate::conf::{
     read_cw_config, read_disable_mfm, read_disable_sanitize_hashtags,
@@ -259,7 +261,6 @@ pub fn get_followers_ids() -> Vec<String> {
     let mut last_id = ids.last().unwrap();
     let mut end_loop = false;
     loop {
-
         println!(
             "fetched {} followers so far, last id is \"{}\"",
             ids.len(),
@@ -315,7 +316,13 @@ pub fn get_followers_ids() -> Vec<String> {
     for i in ids {
         let regex = Regex::new("#[Nn]o[Mm]arkov").unwrap();
 
-        if !regex.is_match(i.follower.description.clone().unwrap_or(String::from("")).as_str()) {
+        if !regex.is_match(
+            i.follower
+                .description
+                .clone()
+                .unwrap_or(String::from(""))
+                .as_str(),
+        ) {
             ids_filtered.push(i.follower_id.clone());
         }
     }
@@ -329,21 +336,60 @@ pub struct CreatedNote {
     created_note: Post,
 }
 
-pub fn create_post(text: String) {
+pub fn create_post(title: String, summary: String, body: Vec<String>) {
     let instance = read_instance();
     let posting_token = read_posting_token();
 
-    let mut sanitized = sanitize_mentions(text.clone());
-    sanitized = sanitize_formatting(sanitized.clone());
-    sanitized = sanitize_hashtags(sanitized.clone());
-    sanitized = remove_mfm(sanitized.clone());
+    let mut sanitized_title = sanitize_mentions(title.clone());
+    sanitized_title = sanitize_formatting(sanitized_title.clone());
+    sanitized_title = sanitize_hashtags(sanitized_title.clone());
+    sanitized_title = remove_mfm(sanitized_title.clone());
+
+    let mut sanitized_body: Vec<String> = vec![];
+
+    for i in body {
+        let mut sanitized_body_part = sanitize_mentions(i.clone());
+        sanitized_body_part = sanitize_formatting(sanitized_body_part.clone());
+        sanitized_body_part = sanitize_hashtags(sanitized_body_part.clone());
+        sanitized_body_part = remove_mfm(sanitized_body_part.clone());
+        sanitized_body.push(sanitized_body_part);
+    }
 
     let visibility = read_visibility();
-
     let cw_config = read_cw_config();
 
+    let mut vec: Vec<Value> = vec![];
+
+    for i in &sanitized_body {
+        vec.push(json!({
+            "id": Uuid::new_v4().to_string(),
+            "type": "text",
+            "text": i
+        }));
+    }
+
+    let now = Utc::now();
+
+    let json = json!({
+        "title": sanitized_title,
+        "summary": summary,
+        "content": vec,
+        "name": format!("{}-{}-{}", now.year(), now.month(), now.day()),
+        "script": "",
+        "variables": vec![] as Vec<Value>
+    });
+
+    reqwest::blocking::Client::new()
+        .post(format!("https://{}/api/pages/create", &instance))
+        .bearer_auth(&posting_token)
+        .json(&json)
+        .send()
+        .unwrap()
+        .error_for_status()
+        .unwrap();
+
     let mut json = json!({
-        "text": sanitized,
+        "text": format!("A markov generated blog post was published by collabmarkov :neocat_floof_cute:\nhttps://fedi.lunya.pet/@collabmarkov/pages/{}-{}-{}", now.year(), now.month(), now.day()),
         "visibility": visibility
     });
 
@@ -360,7 +406,7 @@ pub fn create_post(text: String) {
         .json::<CreatedNote>()
         .unwrap();
 
-    println!("https://{}/notes/{}", instance, res.created_note.id);
+    println!("https://fedi.lunya.pet/notes/{}", res.created_note.id)
 }
 
 pub fn remove_mfm(text: String) -> String {
