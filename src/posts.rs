@@ -70,8 +70,12 @@ fn get_posts_until_last(user_id: String, last_id: String) -> Vec<Post> {
             "withRenotes": false,
             "withBots": false,
         }))
-        .send()
-        .unwrap();
+        .send();
+
+    let out = match out {
+        Ok(a) => a,
+        Err(_) => return vec![],
+    };
 
     if out.status() == StatusCode::TOO_MANY_REQUESTS {
         println!("too many requests for {} retrying...", user_id);
@@ -199,8 +203,12 @@ pub fn get_posts(user_id: String) -> Vec<Post> {
             "withRenotes": false,
             "withBots": false,
         }))
-        .send()
-        .unwrap();
+        .send();
+
+    let req = match req {
+        Ok(a) => a,
+        Err(_) => return vec![],
+    };
 
     if req.status() == StatusCode::TOO_MANY_REQUESTS {
         println!("too many requests for {} retrying...", user_id);
